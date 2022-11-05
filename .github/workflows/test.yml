@@ -1,0 +1,46 @@
+name: test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+concurrency:
+  group: '${{ github.workflow }}-${{ github.head_ref || github.ref_name }}'
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - run: |
+          sudo apt-get install yamllint
+          yamllint action.yml
+  test-site-gen:
+    name: Test ./site-gen/ action on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: actions/checkout@v3
+      with:
+        repository: metanorma/mn-samples-cc
+        path: cc
+
+    - uses: actions-mn/setup@master
+
+    - uses: ./
+      with:
+        source-path: cc
+        agree-to-terms: true
+
+    - uses: andstor/file-existence-action@v1
+      with:
+        files: cc/site/index.html
