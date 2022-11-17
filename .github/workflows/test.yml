@@ -39,7 +39,7 @@ jobs:
         repository: metanorma/mn-samples-cc
         path: cc
 
-    - uses: actions-mn/setup@master
+    - uses: actions-mn/setup@main
 
     - uses: ./
       with:
