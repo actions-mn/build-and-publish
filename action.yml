@@ -18,9 +18,6 @@ inputs:
   use-bundler:
     description: 'Run in bundler'
     default: '' # false
-  use-bundler:
-    description: 'Run in bundler'
-    default: '' # false
 
 runs:
   using: "composite"
