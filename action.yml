@@ -7,7 +7,7 @@ inputs:
     default: '.'
   output-dir:
     description: Output directory for generated site
-    default: site
+    default: _site
   config-file:
     description: 'Metanorma configuration (mainfest) file'
     default: metanorma.yml
