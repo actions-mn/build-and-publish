@@ -3,7 +3,11 @@
 Meta action to compile and publish pages in one step
 
 - [Prerequisites](#prerequisites)
-- [Usage](#usage)
+- [Scenarios](#scenarios)
+  * [Simple, if `metanorma.yml` is in the root of the repository](#simple--if--metanormayml--is-in-the-root-of-the-repository)
+  * [For `metanorma` installed with bundler](#for--metanorma--installed-with-bundler)
+  * [For documentation in a non-root directory](#for-documentation-in-a-non-root-directory)
+  * [Non-standart output directory](#non-standart-output-directory)
 - [Complete examples](#complete-examples)
   * [Docker](#docker)
   * [Ubuntu](#ubuntu)
@@ -50,7 +54,9 @@ Before `uses: actions-mn/build-and-publish@main` ensure that `metanorma-cli` is 
          ...
    ```
 
-## Usage
+## Scenarios
+
+### Simple, if `metanorma.yml` is in the root of the repository
 
 ```yml
 ...
@@ -59,17 +65,34 @@ Before `uses: actions-mn/build-and-publish@main` ensure that `metanorma-cli` is 
     agree-to-terms: true
 ```
 
-or
+### For `metanorma` installed with bundler
 
 ```yml
 ...
 - uses: actions-mn/build-and-publish@main
   with:
-    source-path: documents
-    config-file: metanorma.yml
     agree-to-terms: true
-    output-dir: site
-    use-bundler: false
+    use-bundler: true
+```
+
+### For documentation in a non-root directory
+
+```yml
+...
+- uses: actions-mn/build-and-publish@main
+  with:
+    source-path: non-root-doc
+    agree-to-terms: true
+```
+
+### Non-standart output directory
+
+```yml
+...
+- uses: actions-mn/build-and-publish@main
+  with:
+    agree-to-terms: true
+    output-dir: my-output
 ```
 
 ## Complete examples
