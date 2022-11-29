@@ -11,6 +11,10 @@ Meta action to compile and publish pages in one step
 - [Complete examples](#complete-examples)
   * [Docker](#docker)
   * [Ubuntu](#ubuntu)
+  * [Private flavors](#private-flavors)
+  * [Full examples](#full-examples)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
 ## Prerequisites
 
@@ -185,7 +189,6 @@ jobs:
         uses: actions-mn/build-and-publish@main
         with:
           agree-to-terms: true
-          output-dir: ./_site
 
   deploy:
     if: ${{ github.ref == 'refs/heads/main' }}
@@ -198,4 +201,38 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
+```
+
+### Private flavors
+
+## Full examples
+
+```yaml
+name: generate
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: metanorma/metanorma:latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup BSI
+        uses: actions-mn/setup-flavors@v1
+        with:
+          extra-flavors: bsi
+          github-pakages-token: ${{ secrets.GITHUB_PAT_TOKEN }}
+          use-bundler: true
+
+      - name: Metanorma generate site
+        uses: actions-mn/build-and-publish@v1
+        with:
+          agree-to-terms: true
 ```
