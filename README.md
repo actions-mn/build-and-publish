@@ -18,45 +18,47 @@ Meta action to compile and publish pages in one step
 
 ## Prerequisites
 
-Before `uses: actions-mn/build-and-publish@main` ensure that `metanorma-cli` is installed. You can install it in different ways:
+1. Make sure that [GH Pages enabled in settings](https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site#creating-your-site)
+1. Before `uses: actions-mn/build-and-publish@main` ensure that `metanorma-cli` is installed. You can install it in different ways:
 
-1. With GitHub Action
-   ```yml
-   ...
-   - uses: actions-mn/setup@main
-   ...
-   ```
-1. With Ruby
-   ```yml
-   ...
-   - uses: ruby/setup-ruby@v1
-     with:
-       ruby-version: '3.1'
-   - run: gem install metanorma-cli`
-   ...
-   ```
-   or with `Gemfile` (that contains `gem "metanorma-cli"`)
-   ```yml
-   ...
-   - uses: ruby/setup-ruby@v1
-     with:
-       ruby-version: '3.1'
-   - run: bundle install`
-   ...
-   ```
-   > NOTE: if metanorma-cli is installed with bundle install make sure to path use-bundler: true to the action
-1. With docker container:
-   ```yml
-   ...
-   jobs:
-     ...
-     metanorma:
-       runs-on: ubuntu-latest
-       container:
-         image: metanorma/metanorma:latest
-       steps:
+    1. With GitHub Action
+       ```yml
+       ...
+       - uses: actions-mn/setup@main
+       ...
+       ```
+    1. With Ruby
+       ```yml
+       ...
+       - uses: ruby/setup-ruby@v1
+         with:
+           ruby-version: '3.1'
+       - run: gem install metanorma-cli`
+       ...
+       ```
+       or with `Gemfile` (that contains `gem "metanorma-cli"`)
+       ```yml
+       ...
+       - uses: ruby/setup-ruby@v1
+         with:
+           ruby-version: '3.1'
+       - run: bundle install`
+       ...
+       ```
+       > NOTE: if metanorma-cli is installed with bundle install make sure to path use-bundler: true to the action
+    1. With docker container:
+       ```yml
+       ...
+       jobs:
          ...
-   ```
+         metanorma:
+           runs-on: ubuntu-latest
+           container:
+             image: metanorma/metanorma:latest
+           steps:
+             ...
+       ```
+
 
 ## Scenarios
 
