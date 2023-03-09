@@ -24,8 +24,9 @@ jobs:
       - run: |
           sudo apt-get install yamllint
           yamllint action.yml
-  test-site-gen:
-    name: Test ./site-gen/ action on ${{ matrix.os }}
+
+  test-default-public:
+    name: Test default on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -43,9 +44,38 @@ jobs:
 
     - uses: ./
       with:
+        token: ${{ secrets.GITHUB_TOKEN }}
         source-path: cc
         agree-to-terms: true
 
     - uses: andstor/file-existence-action@v1
       with:
-        files: cc/site/index.html
+        files: cc/_site/index.html
+
+  test-artifact-public:
+    name: Test artifact on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: actions/checkout@v3
+      with:
+        repository: metanorma/mn-samples-cc
+        path: cc
+
+    - uses: actions-mn/setup@main
+
+    - uses: ./
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        source-path: cc
+        agree-to-terms: true
+        destination: artifact
+
+    - uses: andstor/file-existence-action@v1
+      with:
+        files: cc/_site/index.html

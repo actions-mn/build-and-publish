@@ -1,7 +1,13 @@
 # build-and-publish
 
+![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/actions-mn/build-and-publish)
+[![GitHub actions](https://github.com/actions-mn/build-and-publish/actions/workflows/test.yml/badge.svg)](https://github.com/actions-mn/build-and-publish/actions/workflows/test.yml)
+
 Meta action to compile and publish pages in one step
 
+By default, the action will try to compile/generate docs and upload them as pages artifact for later deployment. If GitHub Pages is not enabled for a repo where this action is used it will just upload an artifact with the name `metanorma-build-artifact`. Check [action.yml](./action.yml) for more details.
+
+- [Description](#description)
 - [Prerequisites](#prerequisites)
 - [Scenarios](#scenarios)
   * [Simple, if `metanorma.yml` is in the root of the repository](#simple--if--metanormayml--is-in-the-root-of-the-repository)
