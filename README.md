@@ -74,6 +74,7 @@ By default, the action will try to compile/generate docs and upload them as page
 ...
 - uses: actions-mn/build-and-publish@main
   with:
+    token: ${{ secrets.GITHUB_TOKEN }}
     agree-to-terms: true
 ```
 
@@ -83,6 +84,7 @@ By default, the action will try to compile/generate docs and upload them as page
 ...
 - uses: actions-mn/build-and-publish@main
   with:
+    token: ${{ secrets.GITHUB_TOKEN }}
     agree-to-terms: true
     use-bundler: true
 ```
@@ -93,6 +95,7 @@ By default, the action will try to compile/generate docs and upload them as page
 ...
 - uses: actions-mn/build-and-publish@main
   with:
+    token: ${{ secrets.GITHUB_TOKEN }}
     source-path: non-root-doc
     agree-to-terms: true
 ```
@@ -103,6 +106,7 @@ By default, the action will try to compile/generate docs and upload them as page
 ...
 - uses: actions-mn/build-and-publish@main
   with:
+    token: ${{ secrets.GITHUB_TOKEN }}
     agree-to-terms: true
     output-dir: my-output
 ```
@@ -144,8 +148,8 @@ jobs:
       - name: Metanorma generate site
         uses: actions-mn/build-and-publish@main
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           agree-to-terms: true
-          output-dir: ./_site
 
   deploy:
     if: ${{ github.ref == 'refs/heads/main' }}
@@ -196,6 +200,7 @@ jobs:
       - name: Metanorma generate site
         uses: actions-mn/build-and-publish@main
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           agree-to-terms: true
 
   deploy:
@@ -242,5 +247,6 @@ jobs:
       - name: Metanorma generate site
         uses: actions-mn/build-and-publish@v1
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           agree-to-terms: true
 ```
