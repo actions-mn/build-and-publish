@@ -1,6 +1,9 @@
 name: 'build-and-publish'
 description: 'Perform metanorma site generate and upload pages artifact'
 inputs:
+  token:
+    description: secrets.GITHUB_TOKEN
+    default: '.'
   source-path:
     description: Source path, usually directory where configuration
       (manifest) file is
@@ -18,6 +21,9 @@ inputs:
   use-bundler:
     description: 'Run in bundler'
     default: '' # false
+  destination:
+    description: 'What is a target of the action. At this moment `default`, `gh-pages` or `artifact` is available'
+    default: default
 
 runs:
   using: "composite"
@@ -32,9 +38,25 @@ runs:
         agree-to-terms: ${{ inputs.source-path }}
         use-bundler: ${{ inputs.use-bundler }}
 
-    - uses: actions/configure-pages@v2
-      id: pages
+    - if: ${{ inputs.destination == 'default' }}
+      id: pages-status
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+      shell: bash
+      run: |
+        pages_enabled=$(gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" "repos/${GITHUB_REPOSITORY}/pages" | jq '.message != "Not Found"')
+        echo "enabled=${pages_enabled}" >> $GITHUB_OUTPUT
 
-    - uses: actions/upload-pages-artifact@v1
+    - if: ${{ inputs.destination == 'gh-pages' || steps.pages-status.outputs.enabled == 'true' }}
+      uses: actions/configure-pages@v2
+
+    - if: ${{ inputs.destination == 'gh-pages' || steps.pages-status.outputs.enabled == 'true' }}
+      uses: actions/upload-pages-artifact@v1
       with:
+        path: ${{ inputs.source-path }}/${{ inputs.output-dir }}
+
+    - if: ${{ inputs.destination == 'artifact' || steps.pages-status.outputs.enabled == 'false' }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: metanorma-build-artifact
         path: ${{ inputs.source-path }}/${{ inputs.output-dir }}
