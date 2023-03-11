@@ -25,6 +25,28 @@ jobs:
           sudo apt-get install yamllint
           yamllint action.yml
 
+  test-docker:
+    runs-on: ubuntu-latest
+    container:
+      image: metanorma/metanorma
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: actions/checkout@v3
+      with:
+        repository: metanorma/mn-samples-cc
+        path: cc
+
+    - uses: ./
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        source-path: cc
+        agree-to-terms: true
+
+    - uses: andstor/file-existence-action@v1
+      with:
+        files: cc/_site/index.html
+
   test-default-public:
     name: Test default on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
