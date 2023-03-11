@@ -24,6 +24,10 @@ inputs:
   destination:
     description: 'What is a target of the action. At this moment `default`, `gh-pages` or `artifact` is available'
     default: default
+outputs:
+  gh-pages-enabled:
+    description: "Random number"
+    value: ${{ steps.pages-status.outputs.enabled }}
 
 runs:
   using: "composite"
@@ -48,9 +52,11 @@ runs:
           curl -L https://github.com/cli/cli/releases/download/v2.24.3/gh_2.24.3_linux_amd64.tar.gz | tar xz --strip-components=2 -C /usr/local/bin/ gh_2.24.3_linux_amd64/bin/gh
         fi
 
-        gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" "repos/${GITHUB_REPOSITORY}/pages"
-        pages_enabled=$(test $? -eq 1 && echo "false" || echo "true")
-        echo "enabled=${pages_enabled}" >> $GITHUB_OUTPUT
+        if gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" "repos/${GITHUB_REPOSITORY}/pages"; then
+          echo "enabled=true" >> $GITHUB_OUTPUT
+        else
+          echo "enabled=false" >> $GITHUB_OUTPUT
+        fi
 
     - if: ${{ inputs.destination == 'gh-pages' || steps.pages-status.outputs.enabled == 'true' }}
       uses: actions/configure-pages@v2
