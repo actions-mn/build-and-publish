@@ -70,7 +70,7 @@ jobs:
         source-path: cc
         agree-to-terms: true
 
-    - uses: andstor/file-existence-action@v1
+    - uses: andstor/file-existence-action@v2
       with:
         files: cc/_site/index.html
 
@@ -98,6 +98,6 @@ jobs:
         agree-to-terms: true
         destination: artifact
 
-    - uses: andstor/file-existence-action@v1
+    - uses: andstor/file-existence-action@v2
       with:
         files: cc/_site/index.html
