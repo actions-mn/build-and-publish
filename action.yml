@@ -2,8 +2,8 @@ name: 'build-and-publish'
 description: 'Perform metanorma site generate and upload pages artifact'
 inputs:
   token:
-    description: secrets.GITHUB_TOKEN
-    default: '.'
+    description: Required if destination='auto'. Just pass secrets.GITHUB_TOKEN
+    default: ''
   source-path:
     description: Source path, usually directory where configuration
       (manifest) file is
@@ -48,6 +48,11 @@ runs:
         GH_TOKEN: ${{ inputs.token }}
       shell: bash
       run: |
+        if [ "$GH_TOKEN" = "" ]; then
+          echo "Error! For destination=default you have to pass token input also."
+          exit 1
+        fi
+
         if ! type gh > /dev/null; then
           curl -L https://github.com/cli/cli/releases/download/v2.24.3/gh_2.24.3_linux_amd64.tar.gz | tar xz --strip-components=2 -C /usr/local/bin/ gh_2.24.3_linux_amd64/bin/gh
         fi

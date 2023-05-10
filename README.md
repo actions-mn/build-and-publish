@@ -10,6 +10,7 @@ By default, the action will try to compile/generate docs and upload them as page
 - [Description](#description)
 - [Prerequisites](#prerequisites)
 - [Scenarios](#scenarios)
+  * [Destinations](#destinations)
   * [Simple, if `metanorma.yml` is in the root of the repository](#simple--if--metanormayml--is-in-the-root-of-the-repository)
   * [For `metanorma` installed with bundler](#for--metanorma--installed-with-bundler)
   * [For documentation in a non-root directory](#for-documentation-in-a-non-root-directory)
@@ -67,6 +68,36 @@ By default, the action will try to compile/generate docs and upload them as page
 
 
 ## Scenarios
+
+### Destinations
+
+The action support several destinations:
+- `default` - Deploy GitHub Pages if possible (as `gh-pages` do) otherwise upload artifact (as `artifact` do)
+  ```yml
+  ...
+  + uses: actions-mn/build-and-publish@main
+    with:
+      token: ${{ secrets.GITHUB_TOKEN }}
+      agree-to-terms: true
+  ```
+- `gh-pages` - Prepare pages artifact for `actions/deploy-pages` action, and fail if not possible
+  ```yml
+  ...
+  + uses: actions-mn/build-and-publish@main
+    with:
+      destination: gh-pages
+      agree-to-terms: true
+  ```
+- `artifact` - Upload site artifact as zip archive
+  ```yml
+  ...
+  + uses: actions-mn/build-and-publish@main
+    with:
+      destination: artifact
+      agree-to-terms: true
+  ```
+
+> *Important note*. In case of `default` you must pass `token`, it's required to determine if pepository allow to GH Pages deployment
 
 ### Simple, if `metanorma.yml` is in the root of the repository
 
