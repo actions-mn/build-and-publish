@@ -2,7 +2,7 @@ name: 'build-and-publish'
 description: 'Perform metanorma site generate and upload pages artifact'
 inputs:
   token:
-    description: Required if destination='auto'. Just pass secrets.GITHUB_TOKEN
+    description: Required if destination='auto'. Just pass `secrets.GITHUB_TOKEN`
     default: ''
   source-path:
     description: Source path, usually directory where configuration
@@ -44,24 +44,7 @@ runs:
 
     - if: ${{ inputs.destination == 'default' }}
       id: pages-status
-      env:
-        GH_TOKEN: ${{ inputs.token }}
-      shell: bash
-      run: |
-        if [ "$GH_TOKEN" = "" ]; then
-          echo "Error! For destination=default you have to pass token input also."
-          exit 1
-        fi
-
-        if ! type gh > /dev/null; then
-          curl -L https://github.com/cli/cli/releases/download/v2.24.3/gh_2.24.3_linux_amd64.tar.gz | tar xz --strip-components=2 -C /usr/local/bin/ gh_2.24.3_linux_amd64/bin/gh
-        fi
-
-        if gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" "repos/${GITHUB_REPOSITORY}/pages"; then
-          echo "enabled=true" >> $GITHUB_OUTPUT
-        else
-          echo "enabled=false" >> $GITHUB_OUTPUT
-        fi
+      uses: metanorma/ci/gh-pages-status-action@main
 
     - if: ${{ inputs.destination == 'gh-pages' || steps.pages-status.outputs.enabled == 'true' }}
       uses: actions/configure-pages@v2
