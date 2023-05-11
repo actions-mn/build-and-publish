@@ -25,7 +25,7 @@ By default, the action will try to compile/generate docs and upload them as page
 
 ## Prerequisites
 
-1. Make sure that [GH Pages enabled in settings](https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site#creating-your-site)
+1. Make sure that [GitHub Pages enabled in settings](https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site#creating-your-site)
 1. Before `uses: actions-mn/build-and-publish@main` ensure that `metanorma-cli` is installed. You can install it in different ways:
 
     1. With GitHub Action
@@ -97,7 +97,7 @@ The action support several destinations:
       agree-to-terms: true
   ```
 
-> *Important note*. In case of `default` you must pass `token`, it's required to determine if pepository allow to GH Pages deployment
+> *Important note*. In case of `default` you must pass `token`, it's required to determine if pepository allow to GitHub Pages deployment
 
 ### Simple, if `metanorma.yml` is in the root of the repository
 
