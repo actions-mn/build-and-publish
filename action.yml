@@ -45,6 +45,8 @@ runs:
     - if: ${{ inputs.destination == 'default' }}
       id: pages-status
       uses: metanorma/ci/gh-pages-status-action@main
+      with:
+        token: ${{ inputs.token }}
 
     - if: ${{ inputs.destination == 'gh-pages' || steps.pages-status.outputs.enabled == 'true' }}
       uses: actions/configure-pages@v2
