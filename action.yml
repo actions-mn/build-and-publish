@@ -24,6 +24,9 @@ inputs:
   destination:
     description: 'What is a target of the action. At this moment `default`, `gh-pages` or `artifact` is available'
     default: default
+  artifact-name:
+    description: 'Name of artifact to upload'
+    default: metanorma-build-artifact
 outputs:
   gh-pages-enabled:
     description: "Random number"
@@ -59,5 +62,5 @@ runs:
     - if: ${{ inputs.destination == 'artifact' || steps.pages-status.outputs.enabled == 'false' }}
       uses: actions/upload-artifact@v3
       with:
-        name: metanorma-build-artifact
+        name: ${{ inputs.artifact-name }}
         path: ${{ inputs.source-path }}/${{ inputs.output-dir }}
