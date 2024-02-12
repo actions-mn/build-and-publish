@@ -57,6 +57,7 @@ runs:
     - if: ${{ inputs.destination == 'gh-pages' || steps.pages-status.outputs.enabled == 'true' }}
       uses: actions/upload-pages-artifact@v3
       with:
+        name: ${{ inputs.artifact-name }}
         path: ${{ inputs.source-path }}/${{ inputs.output-dir }}
 
     - if: ${{ inputs.destination == 'artifact' || steps.pages-status.outputs.enabled == 'false' }}
