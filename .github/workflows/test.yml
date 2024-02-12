@@ -69,6 +69,7 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         source-path: cc
         agree-to-terms: true
+        artifact-name: gh-${{ matrix.os }}
 
     - uses: andstor/file-existence-action@v2
       with:
@@ -97,6 +98,7 @@ jobs:
         source-path: cc
         agree-to-terms: true
         destination: artifact
+        artifact-name: gh-${{ matrix.os }}
 
     - uses: andstor/file-existence-action@v2
       with:
