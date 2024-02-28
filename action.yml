@@ -65,3 +65,4 @@ runs:
       with:
         name: ${{ inputs.artifact-name }}
         path: ${{ inputs.source-path }}/${{ inputs.output-dir }}
+        if-no-files-found: error
