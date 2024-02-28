@@ -171,7 +171,7 @@ jobs:
       image: metanorma/metanorma:latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Cache Metanorma assets
         uses: actions-mn/cache@v1
@@ -220,10 +220,10 @@ jobs:
     runs-on: ubuntu-latest # windows-latest or macos-latest also can be here
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Metanorma
-        uses: actions-mn/setup@main
+        uses: actions-mn/setup@v1
 
       - name: Cache Metanorma assets
         uses: actions-mn/cache@v1
@@ -264,7 +264,7 @@ jobs:
       image: metanorma/metanorma:latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup BSI
         uses: actions-mn/setup-flavors@v1
@@ -299,10 +299,10 @@ jobs:
       image: metanorma/metanorma:latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Metanorma
-        uses: actions-mn/setup@main
+        uses: actions-mn/setup@v1
 
       - name: Metanorma generate site
         uses: actions-mn/build-and-publish@v1
