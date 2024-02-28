@@ -249,8 +249,6 @@ jobs:
 
 ### Private flavors
 
-## Full examples
-
 ```yaml
 name: generate
 
@@ -279,5 +277,37 @@ jobs:
         uses: actions-mn/build-and-publish@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          agree-to-terms: true
+```
+
+### Private repository
+
+In case of private repository the GitHub Pages disabled so it this case make sense to set `destination: artifact`. And no `deploy` job required
+
+```yaml
+name: generate
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: metanorma/metanorma:latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Metanorma
+        uses: actions-mn/setup@main
+
+      - name: Metanorma generate site
+        uses: actions-mn/build-and-publish@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          destination: artifact
           agree-to-terms: true
 ```
