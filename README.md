@@ -1,6 +1,6 @@
 # build-and-publish
 
-![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/actions-mn/build-and-publish)
+[![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/actions-mn/build-and-publish)](https://github.com/actions-mn/build-and-publish/releases)
 [![GitHub actions](https://github.com/actions-mn/build-and-publish/actions/workflows/test.yml/badge.svg)](https://github.com/actions-mn/build-and-publish/actions/workflows/test.yml)
 
 Meta action to compile and publish pages in one step
