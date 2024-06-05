@@ -37,7 +37,7 @@ runs:
   steps:
     - uses: actions-mn/cache@v1
 
-    - uses: actions-mn/site-gen@v1
+    - uses: actions-mn/site-gen@v2
       with:
         source-path: ${{ inputs.source-path }}
         config-file: ${{ inputs.config-file }}
