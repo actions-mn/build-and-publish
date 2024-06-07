@@ -274,7 +274,7 @@ jobs:
           use-bundler: true
 
       - name: Metanorma generate site
-        uses: actions-mn/build-and-publish@v1
+        uses: actions-mn/build-and-publish@main
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           agree-to-terms: true
@@ -305,7 +305,7 @@ jobs:
         uses: actions-mn/setup@v1
 
       - name: Metanorma generate site
-        uses: actions-mn/build-and-publish@v1
+        uses: actions-mn/build-and-publish@main
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           destination: artifact
