@@ -5,7 +5,7 @@
 
 Meta action to compile and publish pages in one step
 
-By default, the action will try to compile/generate docs and upload them as pages artifact for later deployment. If GitHub Pages is not enabled for a repo where this action is used it will just upload an artifact with the name `metanorma-build-artifact`. Check [action.yml](./action.yml) for more details.
+By default, the action will try to compile/generate docs and upload them as a pages artifact for later deployment. If GitHub Pages are not enabled for a repo where this action is used it will just upload an artifact with the name `metanorma-build-artifact`. Check [action.yml](./action.yml) for more details.
 
 - [Description](#description)
 - [Prerequisites](#prerequisites)
@@ -20,6 +20,7 @@ By default, the action will try to compile/generate docs and upload them as page
   * [Ubuntu](#ubuntu)
   * [Private flavors](#private-flavors)
   * [Full examples](#full-examples)
+  * [PR previews](#pr-previews)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
@@ -71,7 +72,7 @@ By default, the action will try to compile/generate docs and upload them as page
 
 ### Destinations
 
-The action support several destinations:
+The action supports several destinations:
 - `default` - Deploy GitHub Pages if possible (as `gh-pages` do) otherwise upload artifact (as `artifact` do)
   ```yml
   ...
@@ -97,7 +98,7 @@ The action support several destinations:
       agree-to-terms: true
   ```
 
-> *Important note*. In case of `default` you must pass `token`, it's required to determine if pepository allow to GitHub Pages deployment
+> *Important note*. In the case of `default` you must pass `token`, it's required to determine if the repository has GitHub Pages enabled
 
 ### Simple, if `metanorma.yml` is in the root of the repository
 
@@ -131,7 +132,7 @@ The action support several destinations:
     agree-to-terms: true
 ```
 
-### Non-standart output directory
+### Non-standard output directory
 
 ```yml
 ...
@@ -282,7 +283,7 @@ jobs:
 
 ### Private repository
 
-In case of private repository the GitHub Pages disabled so it this case make sense to set `destination: artifact`. And no `deploy` job required
+In the case of a private repository the GitHub Pages are disabled so in this case, it makes sense to set `destination: artifact`. And no `deploy` job required
 
 ```yaml
 name: generate
@@ -311,3 +312,9 @@ jobs:
           destination: artifact
           agree-to-terms: true
 ```
+
+### PR previews 
+
+It's also possible to deploy pages from PR for preview purposes.
+
+For the complete example look at [`actions-mn/deploy-pages` repository](https://github.com/actions-mn/deploy-pages/blob/main/README.md#complete-example)
