@@ -48,7 +48,7 @@ runs:
         source-path: ${{ inputs.source-path }}
         config-file: ${{ inputs.config-file }}
         output-dir: ${{ inputs.output-dir }}
-        agree-to-terms: ${{ inputs.source-path }}
+        agree-to-terms: ${{ inputs.agree-to-terms }}
         install-fonts: ${{ inputs.install-fonts }}
         continue-without-fonts: ${{ inputs.continue-without-fonts }}
         use-bundler: ${{ inputs.use-bundler }}
