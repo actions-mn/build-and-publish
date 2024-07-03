@@ -18,6 +18,12 @@ inputs:
     description: 'Agree / Disagree with all third-party licensing terms
       presented (WARNING: do know what you are agreeing with!)'
     default: '' # false
+  install-fonts:
+    description: 'Install missing fonts'
+    default: 'true'
+  continue-without-fonts:
+    description: 'Continue processing even when fonts are missing'
+    default: '' # false
   use-bundler:
     description: 'Run in bundler'
     default: '' # false
@@ -43,6 +49,8 @@ runs:
         config-file: ${{ inputs.config-file }}
         output-dir: ${{ inputs.output-dir }}
         agree-to-terms: ${{ inputs.source-path }}
+        install-fonts: ${{ inputs.install-fonts }}
+        continue-without-fonts: ${{ inputs.continue-without-fonts }}
         use-bundler: ${{ inputs.use-bundler }}
 
     - if: ${{ inputs.destination == 'default' }}
