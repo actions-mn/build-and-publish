@@ -33,6 +33,14 @@ inputs:
   artifact-name:
     description: 'Name of artifact to upload'
     default: github-pages
+  cache-site-for-manifest:
+    description: Path to valid metanorma.yml manifest file to cache build
+    default: ''
+  cache-extra-input:
+    description: |
+      Coma (or line) -seprated list of directories that affect metanorma build.
+      All paths relative to `cache-site-for-manifest`
+    default: ''
 outputs:
   gh-pages-enabled:
     description: "Random number"
@@ -42,6 +50,10 @@ runs:
   using: "composite"
   steps:
     - uses: actions-mn/cache@v1
+      with:
+        cache-site-for-manifest: ${{ inputs.cache-site-for-manifest }}
+        cache-site-path: ${{ inputs.output-dir }}
+        extra-input: ${{ inputs.cache-extra-input }}
 
     - uses: actions-mn/site-gen@v2
       with:
