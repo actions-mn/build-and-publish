@@ -50,12 +50,14 @@ runs:
   using: "composite"
   steps:
     - uses: actions-mn/cache@v1
+      id: cache-mn
       with:
         cache-site-for-manifest: ${{ inputs.cache-site-for-manifest }}
         cache-site-path: ${{ inputs.output-dir }}
         extra-input: ${{ inputs.cache-extra-input }}
 
-    - uses: actions-mn/site-gen@v2
+    - if: steps.cache-mn.outputs.cache-hit != 'true'
+      uses: actions-mn/site-gen@v2
       with:
         source-path: ${{ inputs.source-path }}
         config-file: ${{ inputs.config-file }}
