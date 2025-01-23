@@ -56,7 +56,7 @@ runs:
         cache-site-path: ${{ inputs.output-dir }}
         extra-input: ${{ inputs.cache-extra-input }}
 
-    - if: steps.cache-mn.outputs.cache-hit != 'true'
+    - if: ${{ steps.cache-mn.outputs.cache-site-cache-hit != 'true' }}
       uses: actions-mn/site-gen@v2
       with:
         source-path: ${{ inputs.source-path }}
