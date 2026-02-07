@@ -5,21 +5,25 @@
 
 Meta action to compile and publish pages in one step
 
+> **Note**: Version v3 now uses ES2024 TypeScript-based actions (`actions-mn/cache@v2` and `actions-mn/site-gen@main`) under the hood for improved performance and maintainability. The action interface remains unchanged.
+
 By default, the action will try to compile/generate docs and upload them as a pages artifact for later deployment. If GitHub Pages are not enabled for a repo where this action is used it will just upload an artifact with the name `metanorma-build-artifact`. Check [action.yml](./action.yml) for more details.
 
 - [Description](#description)
 - [Prerequisites](#prerequisites)
+- [Inputs](#inputs)
+- [Outputs](#outputs)
 - [Scenarios](#scenarios)
   * [Destinations](#destinations)
   * [Simple, if `metanorma.yml` is in the root of the repository](#simple--if--metanormayml--is-in-the-root-of-the-repository)
   * [For `metanorma` installed with bundler](#for--metanorma--installed-with-bundler)
   * [For documentation in a non-root directory](#for-documentation-in-a-non-root-directory)
-  * [Non-standart output directory](#non-standart-output-directory)
+  * [Non-standard output directory](#non-standard-output-directory)
 - [Complete examples](#complete-examples)
   * [Docker](#docker)
   * [Ubuntu](#ubuntu)
   * [Private flavors](#private-flavors)
-  * [Full examples](#full-examples)
+  * [Private repository](#private-repository)
   * [PR previews](#pr-previews)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
@@ -32,7 +36,7 @@ By default, the action will try to compile/generate docs and upload them as a pa
     1. With GitHub Action
        ```yml
        ...
-       - uses: actions-mn/setup@main
+       - uses: actions-mn/setup@v3
        ...
        ```
     1. With Ruby
@@ -66,6 +70,53 @@ By default, the action will try to compile/generate docs and upload them as a pa
            steps:
              ...
        ```
+
+
+## Inputs
+
+| Input | Description | Required | Default |
+|-------|-------------|----------|---------|
+| `token` | GitHub token (required for `destination: default`) | conditional | `''` |
+| `source-path` | Directory containing `metanorma.yml` | no | `.` |
+| `output-dir` | Output directory for generated site | no | `_site` |
+| `config-file` | Metanorma configuration file name | no | `metanorma.yml` |
+| `agree-to-terms` | Agree to third-party licensing terms | no | `''` |
+| `install-fonts` | Install missing fonts | no | `true` |
+| `continue-without-fonts` | Continue when fonts are missing | no | `''` |
+| `use-bundler` | Run via bundler | no | `''` |
+| `strict` | Enable strict mode | no | `''` |
+| `progress` | Show progress | no | `''` |
+| `destination` | Target: `default`, `gh-pages`, or `artifact` | no | `default` |
+| `artifact-name` | Name of artifact to upload | no | `github-pages` |
+| `cache-site-for-manifest` | Path to manifest for cache key | no | `''` |
+| `cache-extra-input` | Extra directories affecting build | no | `''` |
+
+## Outputs
+
+| Output | Description |
+|--------|-------------|
+| `gh-pages-enabled` | Whether GitHub Pages is enabled for the repository (`true`/`false`) |
+| `site-path` | Absolute path to the generated site directory |
+| `config-used` | Path to the configuration file used |
+| `metanorma-version` | Version of metanorma used for the build |
+| `cache-hit` | Whether the build was restored from cache (`true`/`false`) |
+
+### Using Outputs
+
+```yml
+- name: Build and publish
+  id: build
+  uses: actions-mn/build-and-publish@v3
+  with:
+    token: ${{ secrets.GITHUB_TOKEN }}
+    agree-to-terms: true
+
+- name: Log build info
+  run: |
+    echo "Site path: ${{ steps.build.outputs.site-path }}"
+    echo "Metanorma version: ${{ steps.build.outputs.metanorma-version }}"
+    echo "Cache hit: ${{ steps.build.outputs.cache-hit }}"
+```
 
 
 ## Scenarios
@@ -104,7 +155,7 @@ The action supports several destinations:
 
 ```yml
 ...
-- uses: actions-mn/build-and-publish@main
+- uses: actions-mn/build-and-publish@v3
   with:
     token: ${{ secrets.GITHUB_TOKEN }}
     agree-to-terms: true
@@ -114,7 +165,7 @@ The action supports several destinations:
 
 ```yml
 ...
-- uses: actions-mn/build-and-publish@main
+- uses: actions-mn/build-and-publish@v3
   with:
     token: ${{ secrets.GITHUB_TOKEN }}
     agree-to-terms: true
@@ -125,7 +176,7 @@ The action supports several destinations:
 
 ```yml
 ...
-- uses: actions-mn/build-and-publish@main
+- uses: actions-mn/build-and-publish@v3
   with:
     token: ${{ secrets.GITHUB_TOKEN }}
     source-path: non-root-doc
@@ -136,7 +187,7 @@ The action supports several destinations:
 
 ```yml
 ...
-- uses: actions-mn/build-and-publish@main
+- uses: actions-mn/build-and-publish@v3
   with:
     token: ${{ secrets.GITHUB_TOKEN }}
     agree-to-terms: true
@@ -175,10 +226,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Cache Metanorma assets
-        uses: actions-mn/cache@v1
+        uses: actions-mn/cache@v2
 
       - name: Metanorma generate site
-        uses: actions-mn/build-and-publish@main
+        uses: actions-mn/build-and-publish@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           agree-to-terms: true
@@ -224,13 +275,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Metanorma
-        uses: actions-mn/setup@v1
+        uses: actions-mn/setup@v3
 
       - name: Cache Metanorma assets
-        uses: actions-mn/cache@v1
+        uses: actions-mn/cache@v2
 
       - name: Metanorma generate site
-        uses: actions-mn/build-and-publish@main
+        uses: actions-mn/build-and-publish@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           agree-to-terms: true
@@ -275,7 +326,7 @@ jobs:
           use-bundler: true
 
       - name: Metanorma generate site
-        uses: actions-mn/build-and-publish@main
+        uses: actions-mn/build-and-publish@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           agree-to-terms: true
@@ -303,10 +354,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Metanorma
-        uses: actions-mn/setup@v1
+        uses: actions-mn/setup@v3
 
       - name: Metanorma generate site
-        uses: actions-mn/build-and-publish@main
+        uses: actions-mn/build-and-publish@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           destination: artifact

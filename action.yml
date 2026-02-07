@@ -12,7 +12,7 @@ inputs:
     description: Output directory for generated site
     default: _site
   config-file:
-    description: 'Metanorma configuration (mainfest) file'
+    description: 'Metanorma configuration (manifest) file'
     default: metanorma.yml
   agree-to-terms:
     description: 'Agree / Disagree with all third-party licensing terms
@@ -27,6 +27,12 @@ inputs:
   use-bundler:
     description: 'Run in bundler'
     default: '' # false
+  strict:
+    description: 'Enable strict mode'
+    default: '' # false
+  progress:
+    description: 'Show progress'
+    default: '' # false
   destination:
     description: 'What is a target of the action. At this moment `default`, `gh-pages` or `artifact` is available'
     default: default
@@ -38,26 +44,53 @@ inputs:
     default: ''
   cache-extra-input:
     description: |
-      Coma (or line) -seprated list of directories that affect metanorma build.
+      Comma (or line) separated list of directories that affect metanorma build.
       All paths relative to `cache-site-for-manifest`
     default: ''
 outputs:
   gh-pages-enabled:
-    description: "Random number"
+    description: "Whether GitHub Pages is enabled for the repository"
     value: ${{ steps.pages-status.outputs.enabled }}
+  site-path:
+    description: "Absolute path to the generated site directory"
+    value: ${{ steps.site-gen.outputs.site-path }}
+  config-used:
+    description: "Path to the configuration file used"
+    value: ${{ steps.site-gen.outputs.config-used }}
+  metanorma-version:
+    description: "Version of metanorma used for the build"
+    value: ${{ steps.site-gen.outputs.metanorma-version }}
+  cache-hit:
+    description: "Whether the build was restored from cache (true/false)"
+    value: ${{ steps.cache-mn.outputs.cache-site-cache-hit }}
 
 runs:
   using: "composite"
   steps:
-    - uses: actions-mn/cache@v1
+    - name: Validate inputs
+      shell: bash
+      run: |
+        if [[ "${{ inputs.destination }}" == "default" && -z "${{ inputs.token }}" ]]; then
+          echo "::error::token input is required when destination='default'"
+          exit 1
+        fi
+
+    - uses: actions-mn/cache@v2
       id: cache-mn
       with:
         cache-site-for-manifest: ${{ inputs.cache-site-for-manifest }}
         cache-site-path: ${{ inputs.output-dir }}
         extra-input: ${{ inputs.cache-extra-input }}
 
+    - name: Cache hit - site generation skipped
+      if: ${{ steps.cache-mn.outputs.cache-site-cache-hit == 'true' }}
+      shell: bash
+      run: |
+        echo "::notice::Site restored from cache, skipping site-gen"
+
     - if: ${{ steps.cache-mn.outputs.cache-site-cache-hit != 'true' }}
-      uses: actions-mn/site-gen@v2
+      id: site-gen
+      uses: actions-mn/site-gen@v3
       with:
         source-path: ${{ inputs.source-path }}
         config-file: ${{ inputs.config-file }}
@@ -66,6 +99,8 @@ runs:
         install-fonts: ${{ inputs.install-fonts }}
         continue-without-fonts: ${{ inputs.continue-without-fonts }}
         use-bundler: ${{ inputs.use-bundler }}
+        strict: ${{ inputs.strict }}
+        progress: ${{ inputs.progress }}
 
     - if: ${{ inputs.destination == 'default' }}
       id: pages-status

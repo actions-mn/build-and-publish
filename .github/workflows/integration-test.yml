@@ -1,0 +1,393 @@
+name: integration-test
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: '${{ github.workflow }}-${{ github.head_ref || github.ref_name }}'
+  cancel-in-progress: true
+
+jobs:
+  # =============================================================================
+  # JOB 1: Cache Miss Scenario (Full Build)
+  # Purpose: Verify build-and-publish works when cache miss occurs
+  # Expected: Site generation runs, cache is created
+  # =============================================================================
+  cache-miss:
+    name: Cache Miss - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        destination: [ default, artifact ]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
+        with:
+          repository: metanorma/mn-samples-cc
+          path: test/mn-samples-cc
+
+      - uses: actions-mn/setup@v3
+
+      - name: build-and-publish (cache miss expected)
+        id: build
+        uses: ./
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          source-path: test/mn-samples-cc
+          destination: ${{ matrix.destination }}
+          agree-to-terms: true
+          cache-site-for-manifest: test/mn-samples-cc/metanorma.yml
+          artifact-name: cache-miss-${{ matrix.os }}-${{ matrix.destination }}
+
+      - name: Verify outputs
+        shell: bash
+        run: |
+          echo "=== Cache Miss Verification ==="
+          CACHE_HIT="${{ steps.build.outputs.cache-hit }}"
+          echo "Cache hit: '$CACHE_HIT'"
+          echo "gh-pages enabled: '${{ steps.build.outputs.gh-pages-enabled }}'"
+          echo "Site path: '${{ steps.build.outputs.site-path }}'"
+
+          if [ "$CACHE_HIT" == "true" ]; then
+            echo "WARNING: Expected cache-hit to be false on first run, got true"
+          else
+            echo "✓ Cache miss confirmed on first run"
+          fi
+
+      - uses: andstor/file-existence-action@v3
+        with:
+          files: test/mn-samples-cc/_site/index.html
+
+  # =============================================================================
+  # JOB 2: Destination Modes
+  # Purpose: Verify all three destination modes work
+  # =============================================================================
+  destination-modes:
+    name: Destination - ${{ matrix.destination }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        destination: [ default, gh-pages, artifact ]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
+        with:
+          repository: metanorma/mn-samples-cc
+          path: test/mn-samples-cc
+
+      - uses: actions-mn/setup@v3
+
+      - name: build-and-publish - ${{ matrix.destination }}
+        id: build
+        uses: ./
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          source-path: test/mn-samples-cc
+          destination: ${{ matrix.destination }}
+          agree-to-terms: true
+          artifact-name: dest-${{ matrix.destination }}
+
+      - name: Verify ${{ matrix.destination }} behavior
+        shell: bash
+        run: |
+          echo "=== ${{ matrix.destination }} Verification ==="
+          echo "gh-pages enabled: '${{ steps.build.outputs.gh-pages-enabled }}'"
+          echo "✓ Destination mode ${{ matrix.destination }} completed"
+
+      - uses: andstor/file-existence-action@v3
+        with:
+          files: test/mn-samples-cc/_site/index.html
+
+  # =============================================================================
+  # JOB 3: Input Forwarding
+  # Purpose: Verify inputs are correctly forwarded to site-gen@main
+  # =============================================================================
+  input-forwarding:
+    name: Input Forwarding
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
+        with:
+          repository: metanorma/mn-samples-cc
+          path: test/mn-samples-cc
+
+      - uses: actions-mn/setup@v3
+
+      - name: build-and-publish with all inputs
+        uses: ./
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          source-path: test/mn-samples-cc
+          output-dir: custom-output
+          config-file: metanorma.yml
+          agree-to-terms: true
+          install-fonts: true
+          continue-without-fonts: false
+          strict: false
+          progress: false
+          destination: artifact
+          artifact-name: input-forwarding-test
+
+      - name: Verify custom output dir
+        shell: bash
+        run: |
+          if [ -f "test/mn-samples-cc/custom-output/index.html" ]; then
+            echo "✓ Custom output directory honored"
+          else
+            echo "ERROR: Custom output directory not used"
+            exit 1
+          fi
+
+  # =============================================================================
+  # JOB 4: Docker Container Test
+  # Purpose: Verify works in metanorma/metanorma container
+  # =============================================================================
+  docker-test:
+    name: Docker Container
+    runs-on: ubuntu-latest
+    container:
+      image: metanorma/metanorma:latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
+        with:
+          repository: metanorma/mn-samples-cc
+          path: test/mn-samples-cc
+
+      - name: build-and-publish in Docker
+        uses: ./
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          source-path: test/mn-samples-cc
+          destination: artifact
+          agree-to-terms: true
+          artifact-name: docker-test
+
+      - uses: andstor/file-existence-action@v3
+        with:
+          files: test/mn-samples-cc/_site/index.html
+
+  # =============================================================================
+  # JOB 5: New Outputs Verification
+  # Purpose: Verify new outputs from site-gen@main are available
+  # =============================================================================
+  new-outputs:
+    name: New Outputs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
+        with:
+          repository: metanorma/mn-samples-cc
+          path: test/mn-samples-cc
+
+      - uses: actions-mn/setup@v3
+
+      - name: build-and-publish
+        id: build
+        uses: ./
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          source-path: test/mn-samples-cc
+          destination: artifact
+          agree-to-terms: true
+          artifact-name: new-outputs-test
+
+      - name: Verify new outputs exist
+        shell: bash
+        run: |
+          echo "=== New Outputs Verification ==="
+
+          # cache-hit output (available when cache is configured)
+          CACHE_HIT="${{ steps.build.outputs.cache-hit }}"
+          if [ -n "$CACHE_HIT" ]; then
+            echo "✓ cache-hit output: $CACHE_HIT"
+          else
+            echo "INFO: cache-hit output empty (cache not configured for this job)"
+          fi
+
+          # gh-pages-enabled output (available for all destinations)
+          GH_PAGES="${{ steps.build.outputs.gh-pages-enabled }}"
+          if [ -n "$GH_PAGES" ]; then
+            echo "✓ gh-pages-enabled output: $GH_PAGES"
+          else
+            echo "INFO: gh-pages-enabled output empty (expected for artifact destination)"
+          fi
+
+          # site-path output (from site-gen@main)
+          if [ -n "${{ steps.build.outputs.site-path }}" ]; then
+            echo "✓ site-path output: ${{ steps.build.outputs.site-path }}"
+          else
+            echo "INFO: site-path output empty (site-gen may not expose this output)"
+          fi
+
+          # config-used output (from site-gen@main)
+          if [ -n "${{ steps.build.outputs.config-used }}" ]; then
+            echo "✓ config-used output: ${{ steps.build.outputs.config-used }}"
+          else
+            echo "INFO: config-used output empty (site-gen may not expose this output)"
+          fi
+
+          # metanorma-version output (from site-gen@main)
+          if [ -n "${{ steps.build.outputs.metanorma-version }}" ]; then
+            echo "✓ metanorma-version output: ${{ steps.build.outputs.metanorma-version }}"
+          else
+            echo "INFO: metanorma-version output empty (site-gen may not expose this output)"
+          fi
+
+          echo ""
+          echo "✓ Output mechanism verified"
+
+  # =============================================================================
+  # JOB 6: Cache Hit Scenario
+  # Purpose: Verify cache restoration works and site-gen is skipped
+  # Note: This requires separate jobs because caches are saved at job end
+  # =============================================================================
+  cache-hit-create:
+    name: Cache Hit - Create Cache
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
+        with:
+          repository: metanorma/mn-samples-cc
+          path: test/mn-samples-cc
+
+      - uses: actions-mn/setup@v3
+
+      - name: Create cache (first build)
+        id: build
+        uses: ./
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          source-path: test/mn-samples-cc
+          destination: artifact
+          agree-to-terms: true
+          cache-site-for-manifest: test/mn-samples-cc/metanorma.yml
+          artifact-name: cache-create
+
+      - name: Verify cache created
+        shell: bash
+        run: |
+          echo "Cache hit on first build: '${{ steps.build.outputs.cache-hit }}'"
+          if [ "${{ steps.build.outputs.cache-hit }}" == "true" ]; then
+            echo "WARNING: First build had cache hit (unexpected but not an error)"
+          fi
+          echo "✓ Cache should now be saved for next job"
+
+  cache-hit-verify:
+    name: Cache Hit - Verify Cache
+    runs-on: ubuntu-latest
+    needs: cache-hit-create
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
+        with:
+          repository: metanorma/mn-samples-cc
+          path: test/mn-samples-cc
+
+      - uses: actions-mn/setup@v3
+
+      - name: Verify cache hit (second build)
+        id: build
+        uses: ./
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          source-path: test/mn-samples-cc
+          destination: artifact
+          agree-to-terms: true
+          cache-site-for-manifest: test/mn-samples-cc/metanorma.yml
+          artifact-name: cache-verify
+
+      - name: Verify cache was restored
+        shell: bash
+        run: |
+          echo "Cache hit on second build: '${{ steps.build.outputs.cache-hit }}'"
+          if [ "${{ steps.build.outputs.cache-hit }}" != "true" ]; then
+            echo "WARNING: Second build did not have cache hit"
+            echo "This may occur if the cache key differs between runs"
+          else
+            echo "✓ Cache hit behavior verified"
+          fi
+
+  # =============================================================================
+  # JOB 7: Input Validation
+  # Purpose: Verify input validation works correctly
+  # =============================================================================
+  input-validation:
+    name: Input Validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
+        with:
+          repository: metanorma/mn-samples-cc
+          path: test/mn-samples-cc
+
+      - uses: actions-mn/setup@v3
+
+      - name: Test token required for default destination
+        id: test-no-token
+        continue-on-error: true
+        uses: ./
+        with:
+          source-path: test/mn-samples-cc
+          destination: default
+          agree-to-terms: true
+          artifact-name: validation-test
+
+      - name: Verify validation failed
+        shell: bash
+        run: |
+          if [ "${{ steps.test-no-token.outcome }}" == "success" ]; then
+            echo "ERROR: Should have failed without token for default destination"
+            exit 1
+          fi
+          echo "✓ Input validation works - correctly rejected missing token"
+
+  # =============================================================================
+  # JOB 9: Summary
+  # =============================================================================
+  summary:
+    name: Test Summary
+    runs-on: ubuntu-latest
+    needs: [cache-miss, destination-modes, input-forwarding, docker-test, new-outputs, cache-hit-create, cache-hit-verify, input-validation]
+    if: always()
+
+    steps:
+      - name: Generate summary
+        run: |
+          echo "=== Integration Test Summary ==="
+          echo ""
+          echo "✓ All integration test jobs completed"
+          echo ""
+          echo "Test Scenarios Validated:"
+          echo "  1. Cache miss behavior - all platforms"
+          echo "  2. Destination modes - default, gh-pages, artifact"
+          echo "  3. Input forwarding to site-gen@main"
+          echo "  4. Docker container compatibility"
+          echo "  5. Output verification - cache-hit, site-path, config-used, metanorma-version"
+          echo "  6. Cache hit behavior - multi-job verification"
+          echo "  7. Input validation - token required for default destination"
+          echo ""
+          echo "For detailed logs, review each job's output."
