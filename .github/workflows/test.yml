@@ -19,7 +19,7 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - run: |
           sudo apt-get install yamllint
@@ -30,9 +30,9 @@ jobs:
     container:
       image: metanorma/metanorma
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         repository: metanorma/mn-samples-cc
         path: cc
@@ -43,7 +43,7 @@ jobs:
         source-path: cc
         agree-to-terms: true
 
-    - uses: andstor/file-existence-action@v1
+    - uses: andstor/file-existence-action@v3
       with:
         files: cc/_site/index.html
 
@@ -55,14 +55,14 @@ jobs:
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         repository: metanorma/mn-samples-cc
         path: cc
 
-    - uses: actions-mn/setup@main
+    - uses: actions-mn/setup@v3
 
     - uses: ./
       with:
@@ -71,7 +71,7 @@ jobs:
         agree-to-terms: true
         artifact-name: gh-default-${{ matrix.os }}
 
-    - uses: andstor/file-existence-action@v2
+    - uses: andstor/file-existence-action@v3
       with:
         files: cc/_site/index.html
 
@@ -83,14 +83,14 @@ jobs:
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         repository: metanorma/mn-samples-cc
         path: cc
 
-    - uses: actions-mn/setup@main
+    - uses: actions-mn/setup@v3
 
     - uses: ./
       with:
@@ -100,6 +100,6 @@ jobs:
         destination: artifact
         artifact-name: gh-artifact-${{ matrix.os }}
 
-    - uses: andstor/file-existence-action@v2
+    - uses: andstor/file-existence-action@v3
       with:
         files: cc/_site/index.html

@@ -1,0 +1,26 @@
+name: Update Main Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      major_version:
+        description: 'The major version to update'
+        required: true
+        type: choice
+        options:
+          - v3
+          - v2
+          - v1
+      target:
+        description: 'The tag or reference to use'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  tag:
+    uses: actions-mn/shared/.github/workflows/update-major-version.yml@main
+    with:
+      major_version: ${{ inputs.major_version }}
+      target: ${{ inputs.target }}
