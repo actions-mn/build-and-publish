@@ -5,7 +5,7 @@
 
 Meta action to compile and publish pages in one step
 
-> **Note**: Version v3 now uses ES2024 TypeScript-based actions (`actions-mn/cache@v2` and `actions-mn/site-gen@main`) under the hood for improved performance and maintainability. The action interface remains unchanged.
+> **Note**: Version v2 now uses ES2024 TypeScript-based actions (`actions-mn/cache@v2` and `actions-mn/site-gen@v3`) under the hood for improved performance and maintainability. The action interface remains unchanged.
 
 By default, the action will try to compile/generate docs and upload them as a pages artifact for later deployment. If GitHub Pages are not enabled for a repo where this action is used it will just upload an artifact with the name `metanorma-build-artifact`. Check [action.yml](./action.yml) for more details.
 
@@ -106,7 +106,7 @@ By default, the action will try to compile/generate docs and upload them as a pa
 ```yml
 - name: Build and publish
   id: build
-  uses: actions-mn/build-and-publish@v3
+  uses: actions-mn/build-and-publish@v2
   with:
     token: ${{ secrets.GITHUB_TOKEN }}
     agree-to-terms: true
@@ -155,7 +155,7 @@ The action supports several destinations:
 
 ```yml
 ...
-- uses: actions-mn/build-and-publish@v3
+- uses: actions-mn/build-and-publish@v2
   with:
     token: ${{ secrets.GITHUB_TOKEN }}
     agree-to-terms: true
@@ -165,7 +165,7 @@ The action supports several destinations:
 
 ```yml
 ...
-- uses: actions-mn/build-and-publish@v3
+- uses: actions-mn/build-and-publish@v2
   with:
     token: ${{ secrets.GITHUB_TOKEN }}
     agree-to-terms: true
@@ -176,7 +176,7 @@ The action supports several destinations:
 
 ```yml
 ...
-- uses: actions-mn/build-and-publish@v3
+- uses: actions-mn/build-and-publish@v2
   with:
     token: ${{ secrets.GITHUB_TOKEN }}
     source-path: non-root-doc
@@ -187,7 +187,7 @@ The action supports several destinations:
 
 ```yml
 ...
-- uses: actions-mn/build-and-publish@v3
+- uses: actions-mn/build-and-publish@v2
   with:
     token: ${{ secrets.GITHUB_TOKEN }}
     agree-to-terms: true
@@ -229,7 +229,7 @@ jobs:
         uses: actions-mn/cache@v2
 
       - name: Metanorma generate site
-        uses: actions-mn/build-and-publish@v3
+        uses: actions-mn/build-and-publish@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           agree-to-terms: true
@@ -281,7 +281,7 @@ jobs:
         uses: actions-mn/cache@v2
 
       - name: Metanorma generate site
-        uses: actions-mn/build-and-publish@v3
+        uses: actions-mn/build-and-publish@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           agree-to-terms: true
@@ -326,7 +326,7 @@ jobs:
           use-bundler: true
 
       - name: Metanorma generate site
-        uses: actions-mn/build-and-publish@v3
+        uses: actions-mn/build-and-publish@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           agree-to-terms: true
@@ -357,7 +357,7 @@ jobs:
         uses: actions-mn/setup@v3
 
       - name: Metanorma generate site
-        uses: actions-mn/build-and-publish@v3
+        uses: actions-mn/build-and-publish@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           destination: artifact
