@@ -23,7 +23,7 @@ inputs:
     default: 'true'
   continue-without-fonts:
     description: 'Continue processing even when fonts are missing'
-    default: '' # false
+    default: 'true'
   use-bundler:
     description: 'Run in bundler'
     default: '' # false

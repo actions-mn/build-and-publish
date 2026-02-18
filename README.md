@@ -82,7 +82,7 @@ By default, the action will try to compile/generate docs and upload them as a pa
 | `config-file` | Metanorma configuration file name | no | `metanorma.yml` |
 | `agree-to-terms` | Agree to third-party licensing terms | no | `''` |
 | `install-fonts` | Install missing fonts | no | `true` |
-| `continue-without-fonts` | Continue when fonts are missing | no | `''` |
+| `continue-without-fonts` | Continue when fonts are missing | no | `true` |
 | `use-bundler` | Run via bundler | no | `''` |
 | `strict` | Enable strict mode | no | `''` |
 | `progress` | Show progress | no | `''` |
