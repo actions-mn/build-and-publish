@@ -29,7 +29,7 @@ runs:
         source-path: ${{ inputs.source-path }}
         config-file: ${{ inputs.config-file }}
         output-dir: ${{ inputs.output-dir }}
-        agree-to-terms: ${{ inputs.source-path }}
+        agree-to-terms: ${{ inputs.agree-to-terms }}
         use-bundler: ${{ inputs.use-bundler }}
 
     - uses: actions/configure-pages@v2
