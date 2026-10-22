@@ -102,6 +102,19 @@ runs:
         strict: ${{ inputs.strict }}
         progress: ${{ inputs.progress }}
 
+    # actions-mn/cache only RESTORES (via the @actions/cache toolkit, no
+    # post step of its own); without this save the site cache can never
+    # be populated and every run regenerates from scratch
+    - name: Save site cache
+      if: >-
+        ${{ inputs.cache-site-for-manifest != '' &&
+            steps.cache-mn.outputs.hash != '' &&
+            steps.cache-mn.outputs.cache-site-cache-hit != 'true' }}
+      uses: actions/cache/save@v4
+      with:
+        path: ${{ inputs.source-path }}/${{ inputs.output-dir }}
+        key: metanorma-site-cache-${{ steps.cache-mn.outputs.hash }}
+
     - if: ${{ inputs.destination == 'default' }}
       id: pages-status
       uses: metanorma/ci/gh-pages-status-action@main
