@@ -62,7 +62,7 @@ outputs:
     value: ${{ steps.site-gen.outputs.metanorma-version }}
   cache-hit:
     description: "Whether the build was restored from cache (true/false)"
-    value: ${{ steps.cache-mn.outputs.cache-site-cache-hit }}
+    value: ${{ steps.cache-site.outputs.cache-hit }}
 
 runs:
   using: "composite"
@@ -82,13 +82,27 @@ runs:
         cache-site-path: ${{ inputs.output-dir }}
         extra-input: ${{ inputs.cache-extra-input }}
 
+    # actions-mn/cache@v2 restores through @actions/cache with no options,
+    # so its cache-version hash carries no compression method, while
+    # actions/cache/save@v4 writes zstd - same key, different version,
+    # hence "Site cache not found" even though the entry exists. Restore
+    # through the v4 action (the same client that saves); cache-mn stays
+    # for the system caches and the input hash.
+    - name: Restore site cache
+      id: cache-site
+      if: ${{ inputs.cache-site-for-manifest != '' && steps.cache-mn.outputs.hash != '' }}
+      uses: actions/cache/restore@v4
+      with:
+        path: ${{ inputs.source-path }}/${{ inputs.output-dir }}
+        key: metanorma-site-cache-${{ steps.cache-mn.outputs.hash }}
+
     - name: Cache hit - site generation skipped
-      if: ${{ steps.cache-mn.outputs.cache-site-cache-hit == 'true' }}
+      if: ${{ steps.cache-site.outputs.cache-hit == 'true' }}
       shell: bash
       run: |
         echo "::notice::Site restored from cache, skipping site-gen"
 
-    - if: ${{ steps.cache-mn.outputs.cache-site-cache-hit != 'true' }}
+    - if: ${{ steps.cache-site.outputs.cache-hit != 'true' }}
       id: site-gen
       uses: actions-mn/site-gen@v3
       with:
@@ -102,14 +116,13 @@ runs:
         strict: ${{ inputs.strict }}
         progress: ${{ inputs.progress }}
 
-    # actions-mn/cache only RESTORES (via the @actions/cache toolkit, no
-    # post step of its own); without this save the site cache can never
-    # be populated and every run regenerates from scratch
+    # The cache action only restores (toolkit call in a composite step, no
+    # post phase); this save is what populates the site cache.
     - name: Save site cache
       if: >-
         ${{ inputs.cache-site-for-manifest != '' &&
             steps.cache-mn.outputs.hash != '' &&
-            steps.cache-mn.outputs.cache-site-cache-hit != 'true' }}
+            steps.cache-site.outputs.cache-hit != 'true' }}
       uses: actions/cache/save@v4
       with:
         path: ${{ inputs.source-path }}/${{ inputs.output-dir }}
